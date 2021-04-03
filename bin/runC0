@@ -1,0 +1,25 @@
+##!/bin/zsh
+
+docker_c0() { docker run --rm --user=$(id -u):$(id -g) -v "$(pwd)":/code -w /code -it dbatunituebingen/c0:latest $@; }
+execc0() { docker_c0 ./$@; }
+cc0() { docker_c0 cc0 $@; }
+coin() { docker_c0 coin $@; }
+codex() { docker_c0 codex $@; }
+
+
+FILE=${1}
+if [ -f "$FILE" ]; then
+    echo "$FILE exists."
+else 
+    echo "$FILE does not exist.";
+    exit 1;
+fi
+
+echo "listening at ${1}";
+echo "-----------------------------------------";
+
+while inotifywait -q -e close_write ${1}; do
+	cc0 -x -o auto_run_comp ${1};
+	echo "-----------------------------------------";
+done
+
